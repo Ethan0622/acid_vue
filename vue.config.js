@@ -12,7 +12,7 @@ module.exports = {
       })
       .end()
     config.plugin('html').tap((args) => {
-      args[0].title = 'Acid_vue.cli'
+      args[0].title = 'Acid_vue'
       return args
     })
   },
