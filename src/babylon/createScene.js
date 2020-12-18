@@ -1,4 +1,5 @@
 import * as BABYLON from '@babylonjs/core/Legacy/legacy'
+import * as GUI from '@babylonjs/gui'
 import tube from '../assets/meshes/tube.glb'
 import purbottle from '../assets/meshes/purbottle.glb'
 import phebottle from '../assets/meshes/phebottle.glb'
@@ -176,6 +177,24 @@ export default function(canvas, engine) {
       shadowGenerator.blurKernel = 150
     }
 
+    const advancedTexture = new GUI.AdvancedDynamicTexture.CreateFullscreenUI('uiContainer')
+
+    const purText = new GUI.TextBlock();
+    purText.text = "紫色石蕊试剂";
+    purText.resizeToFit = true;
+    purText.color = 'balck'
+    purText.fontSize = 20
+    advancedTexture.addControl(purText)
+    purText.linkWithMesh(purBottle);
+
+    const pheText = new GUI.TextBlock();
+    pheText.text = "酚酞试剂";
+    pheText.resizeToFit = true;
+    pheText.color = 'balck'
+    pheText.fontSize = 20
+    advancedTexture.addControl(pheText)
+    pheText.linkWithMesh(pheBottle);
+
     const frameRate = 12
 
     const takeDropper = new BABYLON.Animation(
@@ -257,6 +276,10 @@ export default function(canvas, engine) {
       value: 53
     })
     dropLiquid.setKeys(dropFrames)
+
+    const easingFunction = new BABYLON.QuadraticEase()
+    easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEIN)
+    dropLiquid.setEasingFunction(easingFunction)
 
     const liquidScale = new BABYLON.Animation(
       'liquidScale',

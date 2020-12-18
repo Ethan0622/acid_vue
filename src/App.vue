@@ -8,16 +8,16 @@
 </template>
 
 <script>
-import BabylonApp from "./BabylonApp";
-import HelloWorldVue from "./components/HelloWorld.vue";
+import BabylonApp from './BabylonApp'
+import HelloWorldVue from './components/HelloWorld.vue'
 
 export default {
-  name: "App",
+  name: 'App',
   components: { HelloWorldVue },
   mounted() {
-    new BabylonApp("renderCanvas");
+    new BabylonApp('renderCanvas')
   },
-};
+}
 </script>
 
 <style>
