@@ -1,9 +1,10 @@
 import * as BABYLON from '@babylonjs/core/Legacy/legacy'
+import * as GUI from '@babylonjs/gui'
 import tube from '../assets/meshes/tube.glb'
 import purbottle from '../assets/meshes/purbottle.glb'
 import phebottle from '../assets/meshes/phebottle.glb'
 
-export default function (canvas, engine) {
+export default function(canvas, engine) {
   // 创建一个场景scene
   const scene = new BABYLON.Scene(engine)
   scene.clearColor = new BABYLON.Color3(240 / 255, 240 / 255, 240 / 255)
@@ -12,8 +13,8 @@ export default function (canvas, engine) {
   Promise.all([
     BABYLON.SceneLoader.ImportMeshAsync('', tube, '', scene, undefined, '.glb'),
     BABYLON.SceneLoader.ImportMeshAsync('', purbottle, '', scene, undefined, '.glb'),
-    BABYLON.SceneLoader.ImportMeshAsync('', phebottle, '', scene, undefined, '.glb'),
-  ]).then(function () {
+    BABYLON.SceneLoader.ImportMeshAsync('', phebottle, '', scene, undefined, '.glb')
+  ]).then(function() {
     const tubeMesh = []
     tubeMesh.push(scene.getMeshByName('tube'))
     tubeMesh.push(scene.getMeshByName('bottom_liquid'))
@@ -36,7 +37,7 @@ export default function (canvas, engine) {
     console.log(phebottleMesh)
 
     console.log(scene.animationGroups)
-    const myan = scene.animationGroups.find((a) => a.name === 'All Animations')
+    const myan = scene.animationGroups.find(a => a.name === 'All Animations')
     myan.stop()
     console.log(scene.animatables)
 
@@ -176,6 +177,24 @@ export default function (canvas, engine) {
       shadowGenerator.blurKernel = 150
     }
 
+    const advancedTexture = new GUI.AdvancedDynamicTexture.CreateFullscreenUI('uiContainer')
+
+    const purText = new GUI.TextBlock();
+    purText.text = "紫色石蕊试剂";
+    purText.resizeToFit = true;
+    purText.color = 'balck'
+    purText.fontSize = 20
+    advancedTexture.addControl(purText)
+    purText.linkWithMesh(purBottle);
+
+    const pheText = new GUI.TextBlock();
+    pheText.text = "酚酞试剂";
+    pheText.resizeToFit = true;
+    pheText.color = 'balck'
+    pheText.fontSize = 20
+    advancedTexture.addControl(pheText)
+    pheText.linkWithMesh(pheBottle);
+
     const frameRate = 12
 
     const takeDropper = new BABYLON.Animation(
@@ -188,32 +207,32 @@ export default function (canvas, engine) {
     const putoutFrames = []
     putoutFrames.push({
       frame: 0,
-      value: new BABYLON.Vector3(80, 0, 80),
+      value: new BABYLON.Vector3(80, 0, 80)
     })
 
     putoutFrames.push({
       frame: 1 * frameRate,
-      value: new BABYLON.Vector3(80, 20, 80),
+      value: new BABYLON.Vector3(80, 20, 80)
     })
 
     putoutFrames.push({
       frame: 4 * frameRate,
-      value: new BABYLON.Vector3(0, 50, 0),
+      value: new BABYLON.Vector3(0, 50, 0)
     })
 
     putoutFrames.push({
       frame: 7 * frameRate,
-      value: new BABYLON.Vector3(0, 50, 0),
+      value: new BABYLON.Vector3(0, 50, 0)
     })
 
     putoutFrames.push({
       frame: 10 * frameRate,
-      value: new BABYLON.Vector3(80, 20, 80),
+      value: new BABYLON.Vector3(80, 20, 80)
     })
 
     putoutFrames.push({
       frame: 11 * frameRate,
-      value: new BABYLON.Vector3(80, 0, 80),
+      value: new BABYLON.Vector3(80, 0, 80)
     })
     takeDropper.setKeys(putoutFrames)
 
@@ -234,32 +253,31 @@ export default function (canvas, engine) {
     const dropFrames = []
     dropFrames.push({
       frame: 0,
-      value: 53,
+      value: 53
     })
 
     dropFrames.push({
       frame: 5 * frameRate,
-      value: 53,
+      value: 53
     })
 
     dropFrames.push({
       frame: 8 * frameRate,
-      value: 5,
+      value: 5
     })
 
     dropFrames.push({
       frame: 9 * frameRate,
-      value: 5,
+      value: 5
     })
 
     dropFrames.push({
       frame: 11 * frameRate,
-      value: 53,
+      value: 53
     })
     dropLiquid.setKeys(dropFrames)
 
     const easingFunction = new BABYLON.QuadraticEase()
-    // For each easing function, you can choose between EASEIN (default), EASEOUT, EASEINOUT
     easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEIN)
     dropLiquid.setEasingFunction(easingFunction)
 
@@ -273,22 +291,22 @@ export default function (canvas, engine) {
     const scaleFrames = []
     scaleFrames.push({
       frame: 0,
-      value: new BABYLON.Vector3(1, 1, 1),
+      value: new BABYLON.Vector3(1, 1, 1)
     })
 
     scaleFrames.push({
       frame: 5 * frameRate,
-      value: new BABYLON.Vector3(1, 1, 1),
+      value: new BABYLON.Vector3(1, 1, 1)
     })
 
     scaleFrames.push({
       frame: 7 * frameRate,
-      value: new BABYLON.Vector3(3, 3, 3),
+      value: new BABYLON.Vector3(3, 3, 3)
     })
 
     scaleFrames.push({
       frame: 11 * frameRate,
-      value: new BABYLON.Vector3(1, 1, 1),
+      value: new BABYLON.Vector3(1, 1, 1)
     })
     liquidScale.setKeys(scaleFrames)
 
@@ -302,27 +320,27 @@ export default function (canvas, engine) {
     const visibileFrames = []
     visibileFrames.push({
       frame: 0,
-      value: 0,
+      value: 0
     })
 
     visibileFrames.push({
       frame: 5 * frameRate,
-      value: 0,
+      value: 0
     })
 
     visibileFrames.push({
       frame: 5.2 * frameRate,
-      value: 1,
+      value: 1
     })
 
     visibileFrames.push({
       frame: 8 * frameRate,
-      value: 1,
+      value: 1
     })
 
     visibileFrames.push({
       frame: 8.5 * frameRate,
-      value: 0,
+      value: 0
     })
 
     liquidSphereVisible.setKeys(visibileFrames)
@@ -331,7 +349,7 @@ export default function (canvas, engine) {
     pheBottle.actionManager = new BABYLON.ActionManager(scene)
 
     purBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
         highLight.addMesh(purBottle, BABYLON.Color3.Magenta())
         highLight.addMesh(purDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
         highLight.addMesh(purDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
@@ -339,7 +357,7 @@ export default function (canvas, engine) {
     )
 
     purBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
         highLight.removeMesh(purBottle)
         highLight.removeMesh(purDropper.getChildMeshes()[0])
         highLight.removeMesh(purDropper.getChildMeshes()[1])
@@ -347,7 +365,7 @@ export default function (canvas, engine) {
     )
 
     purBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function() {
         if (scene.animatables.length == 0) {
           matLiquidSphere.diffuseColor = new BABYLON.Color3(160 / 255, 32 / 255, 240 / 255)
           putoutFrames[0].value = new BABYLON.Vector3(80, 0, 80)
@@ -368,7 +386,7 @@ export default function (canvas, engine) {
     )
 
     pheBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
         highLight.addMesh(pheBottle, BABYLON.Color3.Magenta())
         highLight.addMesh(pheDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
         highLight.addMesh(pheDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
@@ -376,7 +394,7 @@ export default function (canvas, engine) {
     )
 
     pheBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
         highLight.removeMesh(pheBottle)
         highLight.removeMesh(pheDropper.getChildMeshes()[0])
         highLight.removeMesh(pheDropper.getChildMeshes()[1])
@@ -384,7 +402,7 @@ export default function (canvas, engine) {
     )
 
     pheBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function() {
         if (scene.animatables.length == 0) {
           matLiquidSphere.diffuseColor = new BABYLON.Color3(1, 1, 1)
           putoutFrames[0].value = new BABYLON.Vector3(100, 0, 80)
