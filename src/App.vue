@@ -2,18 +2,18 @@
   <div id="app">
     <canvas id="renderCanvas"></canvas>
     <div id="gui">
-      <HelloWorldVue />
+      <Narrative />
     </div>
   </div>
 </template>
 
 <script>
 import BabylonApp from './BabylonApp'
-import HelloWorldVue from './components/HelloWorld.vue'
+import Narrative from './components/Narrative.vue'
 
 export default {
   name: 'App',
-  components: { HelloWorldVue },
+  components: { Narrative },
   mounted() {
     new BabylonApp('renderCanvas')
   },
