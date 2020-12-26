@@ -1,29 +1,24 @@
 <template>
-  <div class="narrative">
-    <button v-for="i in 2" :key="i" @click="open(i - 1)">NPC 说话{{ i }}</button>
+  <div>
   </div>
 </template>
 
 <script>
 import script from '../assets/scripts/script'
+import operation from '../babylon/operation'
+
 export default {
   data() {
     return {}
   },
-  methods: {
-    async open(index) {
-      const res = await this.$Dialog({
-        paragraph: script.paragraphs[index],
-      })
-      console.log(res)
-    },
+  async mounted() {
+      const p1 = script.paragraphs.find((p) => p.id == '初始画面')
+      await this.$dialog({ paragraph: p1 })
+      
+      const p2 = script.paragraphs.find((p) => p.id == '选择酸溶液')
+      await this.$dialog({ paragraph: p2 })
+
+      operation.初始画面()
   },
 }
 </script>
-
-<style scoped>
-.narrative {
-  background-color: rgba(255, 155, 60, 0.5);
-  pointer-events: all;
-}
-</style>

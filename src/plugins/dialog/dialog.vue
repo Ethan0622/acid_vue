@@ -1,8 +1,8 @@
 <template>
   <div class="dialog">
-    <narrative-bubble-vue class="bubble" @click="next" :clickable="!this.typer.typing">
+    <dialog-bubble-vue class="bubble" @click="next" :clickable="!this.typer.typing">
       <p class="text">{{ typed }}</p>
-    </narrative-bubble-vue>
+    </dialog-bubble-vue>
     <div class="choices" v-if="showChoicesView">
       <div v-for="choice in paragraph.responses" :key="choice.name" @click="feedback(choice)" class="choice">
         {{ choice.name }}
@@ -13,10 +13,11 @@
 
 <script>
 import Typer from '../../plugins/typer'
-import NarrativeBubbleVue from '../NarrativeBubble.vue'
+import DialogBubbleVue from './DialogBubble.vue'
+
 
 export default {
-  components: { NarrativeBubbleVue },
+  components: { DialogBubbleVue },
 
   data() {
     return {
@@ -104,7 +105,7 @@ export default {
 <style scoped lang="scss">
 .dialog {
   width: 80%;
-  min-height: 50%;
+  min-height: 30%;
   position: fixed;
   bottom: 0;
   left: 50%;
