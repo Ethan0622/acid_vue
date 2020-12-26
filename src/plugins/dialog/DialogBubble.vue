@@ -1,5 +1,5 @@
 <template>
-  <div class="bubble" @click="handleClick">
+  <div @click="handleClick">
     <slot></slot>
   </div>
 </template>
@@ -18,9 +18,3 @@ export default {
   },
 }
 </script>
-
-<style scoped lang="scss">
-.bubble {
-  background-color: cyan;
-}
-</style>

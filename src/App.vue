@@ -10,6 +10,7 @@
 <script>
 import BabylonApp from './BabylonApp'
 import Narrative from './components/Narrative.vue'
+import script from './assets/scripts/script'
 
 export default {
   name: 'App',

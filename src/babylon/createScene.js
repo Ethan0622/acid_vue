@@ -47,20 +47,29 @@ export default function(canvas, engine) {
     function settingCamera() {
       camera.beta = Math.PI / 1.8
       camera.alpha = -Math.PI / 2
-      camera.radius = 160
-      camera.target.y += 10
+      camera.setTarget(new BABYLON.Vector3(0, 10, 0))
       camera.lowerBetaLimit = (Math.PI / 2) * 0.02
       camera.upperBetaLimit = (Math.PI / 2) * 0.9
-      camera.lowerRadiusLimit = 120
+      camera.lowerRadiusLimit = 20
       camera.upperRadiusLimit = 250
       camera.attachControl(canvas, true)
-      camera.panningSensibility = 0
-      camera.wheelPrecision = 5
-      // camera.useAutoRotationBehavior = true;
+      camera.panningSensibility = 1
+      camera.wheelPrecision = 3
       camera.useBouncingBehavior = true
       camera.useFramingBehavior = true
-      camera.targetScreenOffset = new BABYLON.Vector2(0, -10)
+      camera.position = new BABYLON.Vector3(0, 50, -150)
     }
+
+    const followCamera = new BABYLON.FollowCamera('FollowCam', new BABYLON.Vector3(90, 10, -50), scene)
+    followCamera.radius = 50
+
+    followCamera.heightOffset = 50
+
+    followCamera.cameraAcceleration = 0.2
+
+    followCamera.maxCameraSpeed = 5
+
+    followCamera.attachControl(canvas, true)
 
     // 添加一组灯光到场景
     settingLight()
@@ -206,10 +215,10 @@ export default function(canvas, engine) {
       pheBottle.parent = null
       pheSolution.parent = null
 
-      pheDropper.position = new BABYLON.Vector3(100, 0, 80)
-      pheLiquid.position = new BABYLON.Vector3(100, 0, 80)
-      pheBottle.position = new BABYLON.Vector3(100, 0, 80)
-      pheSolution.position = new BABYLON.Vector3(100, 0, 80)
+      pheDropper.position = new BABYLON.Vector3(110, 0, 80)
+      pheLiquid.position = new BABYLON.Vector3(110, 0, 80)
+      pheBottle.position = new BABYLON.Vector3(110, 0, 80)
+      pheSolution.position = new BABYLON.Vector3(110, 0, 80)
 
       const matPhesolution = new BABYLON.StandardMaterial('matPhesolution', scene)
       matPhesolution.diffuseColor = new BABYLON.Color3(1, 1, 1)
@@ -246,6 +255,8 @@ export default function(canvas, engine) {
     purText.fontSize = 20
     advancedTexture.addControl(purText)
     purText.linkWithMesh(purBottle)
+    purText.linkOffsetY = 50
+    purText.alpha = 0
 
     const pheText = new GUI.TextBlock()
     pheText.text = '酚酞试剂'
@@ -254,6 +265,8 @@ export default function(canvas, engine) {
     pheText.fontSize = 20
     advancedTexture.addControl(pheText)
     pheText.linkWithMesh(pheBottle)
+    pheText.linkOffsetY = 50
+    pheText.alpha = 0
 
     // 右侧切换视角的按钮，临时使用，切换视角还有点小问题
     const cameraButton = new GUI.Button.CreateSimpleButton('but1', '切换视角')
@@ -320,6 +333,33 @@ export default function(canvas, engine) {
     })
     moveCamera.setKeys(moveFrames)
 
+    function pullInCamera() {
+      const pullInCamera = new BABYLON.Animation(
+        'pullInCamera',
+        'position',
+        frameRate,
+        BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+      )
+      const pullInCameraFrames = []
+      pullInCameraFrames.push({
+        frame: 0,
+        value: camera.position
+      })
+      pullInCameraFrames.push({
+        frame: 6 * frameRate,
+        value: new BABYLON.Vector3(0, 50, -50)
+      })
+      moveCamera.setKeys(pullInCameraFrames)
+      camera.setTarget(new BABYLON.Vector3(0, 60, 0))
+      setTimeout(() => {
+        scene.beginDirectAnimation(camera, [pullInCamera], 0, 6 * frameRate, false, 6, function() {
+          console.log('完成！')
+        })
+      }, 500)
+    }
+
+
     let whichLiquid = ''
 
     // 换滴管使用时调用此函数
@@ -330,8 +370,8 @@ export default function(canvas, engine) {
         scene.beginDirectAnimation(purDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
         scene.beginDirectAnimation(purLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
       } else if (pheDropper.position._x == 0) {
-        animationBox.backFrames[1].value = new BABYLON.Vector3(100, 20, 80)
-        animationBox.backFrames[2].value = new BABYLON.Vector3(100, 0, 80)
+        animationBox.backFrames[1].value = new BABYLON.Vector3(110, 20, 80)
+        animationBox.backFrames[2].value = new BABYLON.Vector3(110, 0, 80)
         scene.beginDirectAnimation(pheDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
         scene.beginDirectAnimation(pheLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
       }
@@ -348,7 +388,7 @@ export default function(canvas, engine) {
     })
 
     // 定义试管中的液体缩放基准点
-    let pivotAt = new BABYLON.Vector3(0, main_liquid.getBoundingInfo().boundingBox.vectorsWorld[0].y, 0) 
+    let pivotAt = new BABYLON.Vector3(0, main_liquid.getBoundingInfo().boundingBox.vectorsWorld[0].y, 0)
 
     // 滴加试剂按钮的点击事件
     addButton.onPointerUpObservable.add(function() {
@@ -398,16 +438,24 @@ export default function(canvas, engine) {
           animationBox.backFrames[2].value = new BABYLON.Vector3(80, 0, 80)
           scene.beginDirectAnimation(purDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(purLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(addButton, [animationBox.hideButton], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(backButton, [animationBox.hideButton], 0, 3 * frameRate, false)
+          scene.beginDirectAnimation(addButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
+            addButton.isVisible = false
+          })
+          scene.beginDirectAnimation(backButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
+            backButton.isVisible = false
+          })
         }
         if (whichLiquid == 'phe') {
-          animationBox.backFrames[1].value = new BABYLON.Vector3(100, 20, 80)
-          animationBox.backFrames[2].value = new BABYLON.Vector3(100, 0, 80)
+          animationBox.backFrames[1].value = new BABYLON.Vector3(110, 20, 80)
+          animationBox.backFrames[2].value = new BABYLON.Vector3(110, 0, 80)
           scene.beginDirectAnimation(pheDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(pheLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(addButton, [animationBox.hideButton], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(backButton, [animationBox.hideButton], 0, 3 * frameRate, false)
+          scene.beginDirectAnimation(addButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
+            addButton.isVisible = false
+          })
+          scene.beginDirectAnimation(backButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
+            backButton.isVisible = false
+          })
         }
       }
     })
@@ -417,19 +465,25 @@ export default function(canvas, engine) {
     pheBottle.actionManager = new BABYLON.ActionManager(scene)
 
     purBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
-        highLight.addMesh(purBottle, BABYLON.Color3.Magenta())
-        highLight.addMesh(purDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
-        highLight.addMesh(purDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
-      })
+      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOverTrigger, [
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
+          highLight.addMesh(purBottle, BABYLON.Color3.Magenta())
+          highLight.addMesh(purDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
+          highLight.addMesh(purDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
+        }),
+        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, purText, 'alpha', 1, 300)
+      ])
     )
 
     purBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
-        highLight.removeMesh(purBottle)
-        highLight.removeMesh(purDropper.getChildMeshes()[0])
-        highLight.removeMesh(purDropper.getChildMeshes()[1])
-      })
+      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOutTrigger, [
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
+          highLight.removeMesh(purBottle)
+          highLight.removeMesh(purDropper.getChildMeshes()[0])
+          highLight.removeMesh(purDropper.getChildMeshes()[1])
+        }),
+        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, purText, 'alpha', 0, 300)
+      ])
     )
 
     purBottle.actionManager.registerAction(
@@ -441,6 +495,8 @@ export default function(canvas, engine) {
           animationBox.outFrames[1].value = new BABYLON.Vector3(80, 20, 80)
           scene.beginDirectAnimation(purDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(purLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
+          addButton.isVisible = true
+          backButton.isVisible = true
           scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
         }
@@ -448,19 +504,25 @@ export default function(canvas, engine) {
     )
 
     pheBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
-        highLight.addMesh(pheBottle, BABYLON.Color3.Magenta())
-        highLight.addMesh(pheDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
-        highLight.addMesh(pheDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
-      })
+      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOverTrigger, [
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
+          highLight.addMesh(pheBottle, BABYLON.Color3.Magenta())
+          highLight.addMesh(pheDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
+          highLight.addMesh(pheDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
+        }),
+        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, pheText, 'alpha', 1, 300)
+      ])
     )
 
     pheBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
-        highLight.removeMesh(pheBottle)
-        highLight.removeMesh(pheDropper.getChildMeshes()[0])
-        highLight.removeMesh(pheDropper.getChildMeshes()[1])
-      })
+      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOutTrigger, [
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
+          highLight.removeMesh(pheBottle)
+          highLight.removeMesh(pheDropper.getChildMeshes()[0])
+          highLight.removeMesh(pheDropper.getChildMeshes()[1])
+        }),
+        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, pheText, 'alpha', 0, 300)
+      ])
     )
 
     pheBottle.actionManager.registerAction(
@@ -468,10 +530,12 @@ export default function(canvas, engine) {
         if (scene.animatables.length == 0) {
           changeDropper()
           whichLiquid = 'phe'
-          animationBox.outFrames[0].value = new BABYLON.Vector3(100, 0, 80)
-          animationBox.outFrames[1].value = new BABYLON.Vector3(100, 20, 80)
+          animationBox.outFrames[0].value = new BABYLON.Vector3(110, 0, 80)
+          animationBox.outFrames[1].value = new BABYLON.Vector3(110, 20, 80)
           scene.beginDirectAnimation(pheDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(pheLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
+          addButton.isVisible = true
+          backButton.isVisible = true
           scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
         }
