@@ -1,7 +1,7 @@
 <template>
   <div class="dialog">
     <narrative-bubble-vue class="bubble" @click="next" :clickable="!this.typer.typing">
-      <p class="text">{{ typed }}</p>
+      <p class="text" v-html="typed"></p>
     </narrative-bubble-vue>
     <div class="choices" v-if="showChoicesView">
       <div v-for="choice in paragraph.responses" :key="choice.name" @click="feedback(choice)" class="choice">

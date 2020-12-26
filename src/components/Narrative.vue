@@ -12,8 +12,9 @@ export default {
   },
   methods: {
     async open(index) {
+      const paragraph = script.paragraphs.find((p) => p.id == 'opening')
       const res = await this.$Dialog({
-        paragraph: script.paragraphs[index],
+        paragraph,
       })
       console.log(res)
     },
