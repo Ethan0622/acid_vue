@@ -33,10 +33,6 @@ export default function(canvas, engine) {
     phebottleMesh.push(scene.getMeshByName('phebottle'))
     phebottleMesh.push(scene.getMeshByName('phesolution'))
 
-    console.log(tubeMesh)
-    console.log(purbottleMesh)
-    console.log(phebottleMesh)
-
     // 停止模型自带动画
     const myan = scene.animationGroups.find(a => a.name === 'All Animations')
     myan.stop()
@@ -126,8 +122,6 @@ export default function(canvas, engine) {
     // 定义试管中溶液增减动画的函数
     BABYLON.Mesh.prototype.scaleyFromPivot = function(pivotPoint, t) {
       let _sy = (this.scaling.y + t / 10) / this.scaling.y
-      // this.scaling.y = this.scaling.y + t / 10
-      // this.position.y = pivotPoint.y + _sy * (this.position.y - pivotPoint.y)
 
       const blscaleY = new BABYLON.Animation(
         'blscaleY',
@@ -278,30 +272,30 @@ export default function(canvas, engine) {
     cameraButton.background = 'green'
     advancedTexture.addControl(cameraButton)
 
-    // 控制滴管滴溶液和放回的按钮，由于加了动画，刚进入不可见
-    const addButton = new GUI.Button.CreateSimpleButton('addButton', '滴加试剂')
-    addButton.width = '150px'
-    addButton.height = '40px'
-    addButton.color = 'white'
-    addButton.alpha = 0
-    addButton.cornerRadius = 20
-    addButton.background = 'green'
-    advancedTexture.addControl(addButton)
-    addButton.linkWithMesh(tube)
-    addButton.linkOffsetY = -280
-    addButton.linkOffsetX = 180
+    // // 控制滴管滴溶液和放回的按钮，由于加了动画，刚进入不可见
+    // const addButton = new GUI.Button.CreateSimpleButton('addButton', '滴加试剂')
+    // addButton.width = '150px'
+    // addButton.height = '40px'
+    // addButton.color = 'white'
+    // addButton.alpha = 0
+    // addButton.cornerRadius = 20
+    // addButton.background = 'green'
+    // advancedTexture.addControl(addButton)
+    // addButton.linkWithMesh(tube)
+    // addButton.linkOffsetY = -280
+    // addButton.linkOffsetX = 180
 
-    const backButton = new GUI.Button.CreateSimpleButton('backButton', '放回滴管')
-    backButton.width = '150px'
-    backButton.height = '40px'
-    backButton.color = 'white'
-    backButton.alpha = 0
-    backButton.cornerRadius = 20
-    backButton.background = 'green'
-    advancedTexture.addControl(backButton)
-    backButton.linkWithMesh(tube)
-    backButton.linkOffsetY = -280
-    backButton.linkOffsetX = -180
+    // const backButton = new GUI.Button.CreateSimpleButton('backButton', '放回滴管')
+    // backButton.width = '150px'
+    // backButton.height = '40px'
+    // backButton.color = 'white'
+    // backButton.alpha = 0
+    // backButton.cornerRadius = 20
+    // backButton.background = 'green'
+    // advancedTexture.addControl(backButton)
+    // backButton.linkWithMesh(tube)
+    // backButton.linkOffsetY = -280
+    // backButton.linkOffsetX = -180
 
     // 模拟液滴
     const liquidSphere = BABYLON.MeshBuilder.CreateSphere('liquidSphere', { diameter: 0.4, segments: 32 }, scene)
@@ -377,18 +371,9 @@ export default function(canvas, engine) {
       }
     }
 
-    // 右侧切换视角按钮的点击事件
-    cameraButton.onPointerUpObservable.add(function() {
-      camera.setTarget(new BABYLON.Vector3(90, 20, 80))
-      setTimeout(() => {
-        scene.beginDirectAnimation(camera, [moveCamera], 0, 6 * frameRate, false, 6, function() {
-          console.log('完成！')
-        })
-      }, 500)
-    })
-
     // 定义试管中的液体缩放基准点
     let pivotAt = new BABYLON.Vector3(0, main_liquid.getBoundingInfo().boundingBox.vectorsWorld[0].y, 0)
+<<<<<<< HEAD
 
     // 滴加试剂按钮的点击事件
     addButton.onPointerUpObservable.add(function() {
@@ -459,6 +444,8 @@ export default function(canvas, engine) {
         }
       }
     })
+=======
+>>>>>>> origin/dev
 
     // 两个检测试剂瓶的鼠标监听事件
     purBottle.actionManager = new BABYLON.ActionManager(scene)
@@ -495,10 +482,17 @@ export default function(canvas, engine) {
           animationBox.outFrames[1].value = new BABYLON.Vector3(80, 20, 80)
           scene.beginDirectAnimation(purDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(purLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
+<<<<<<< HEAD
           addButton.isVisible = true
           backButton.isVisible = true
           scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
+=======
+          // addButton.isVisible = true
+          // backButton.isVisible = true
+          // scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
+          // scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
+>>>>>>> origin/dev
         }
       })
     )
@@ -534,10 +528,17 @@ export default function(canvas, engine) {
           animationBox.outFrames[1].value = new BABYLON.Vector3(110, 20, 80)
           scene.beginDirectAnimation(pheDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(pheLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
+<<<<<<< HEAD
           addButton.isVisible = true
           backButton.isVisible = true
           scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
+=======
+          // addButton.isVisible = true
+          // backButton.isVisible = true
+          // scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
+          // scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
+>>>>>>> origin/dev
         }
       })
     )

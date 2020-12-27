@@ -2,7 +2,7 @@
   <div id="app">
     <canvas id="renderCanvas"></canvas>
     <div id="gui">
-      <Narrative />
+      <Narrative :babylon="babylon"/>
     </div>
   </div>
 </template>
@@ -15,8 +15,14 @@ import script from './assets/scripts/script'
 export default {
   name: 'App',
   components: { Narrative },
+  data() {
+    return {
+    babylon: {}
+
+    }
+  },
   mounted() {
-    new BabylonApp('renderCanvas')
+    this.babylon = new BabylonApp('renderCanvas')
   },
 }
 </script>
