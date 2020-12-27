@@ -373,79 +373,6 @@ export default function(canvas, engine) {
 
     // 定义试管中的液体缩放基准点
     let pivotAt = new BABYLON.Vector3(0, main_liquid.getBoundingInfo().boundingBox.vectorsWorld[0].y, 0)
-<<<<<<< HEAD
-
-    // 滴加试剂按钮的点击事件
-    addButton.onPointerUpObservable.add(function() {
-      if (scene.animatables.length == 0) {
-        if (whichLiquid == 'pur') {
-          matLiquidSphere.diffuseColor = new BABYLON.Color3(160 / 255, 32 / 255, 240 / 255)
-          scene.beginDirectAnimation(
-            liquidSphere,
-            [animationBox.dropLiquid, animationBox.liquidScale, animationBox.liquidSphereVisible],
-            0,
-            2.2 * frameRate,
-            false
-          )
-          scene.beginDirectAnimation(
-            main_liquid,
-            [main_liquid.scaleyFromPivot(pivotAt, 0.2)[0], main_liquid.scaleyFromPivot(pivotAt, 0.2)[1]],
-            0,
-            2.2 * frameRate,
-            false
-          )
-        }
-        if (whichLiquid == 'phe') {
-          matLiquidSphere.diffuseColor = new BABYLON.Color3(1, 1, 1)
-          scene.beginDirectAnimation(
-            liquidSphere,
-            [animationBox.dropLiquid, animationBox.liquidScale, animationBox.liquidSphereVisible],
-            0,
-            2.2 * frameRate,
-            false
-          )
-          scene.beginDirectAnimation(
-            main_liquid,
-            [main_liquid.scaleyFromPivot(pivotAt, 0.2)[0], main_liquid.scaleyFromPivot(pivotAt, 0.2)[1]],
-            0,
-            2.2 * frameRate,
-            false
-          )
-        }
-      }
-    })
-
-    // 放回滴管按钮的点击事件
-    backButton.onPointerUpObservable.add(function() {
-      if (scene.animatables.length == 0) {
-        if (whichLiquid == 'pur') {
-          animationBox.backFrames[1].value = new BABYLON.Vector3(80, 20, 80)
-          animationBox.backFrames[2].value = new BABYLON.Vector3(80, 0, 80)
-          scene.beginDirectAnimation(purDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(purLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(addButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
-            addButton.isVisible = false
-          })
-          scene.beginDirectAnimation(backButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
-            backButton.isVisible = false
-          })
-        }
-        if (whichLiquid == 'phe') {
-          animationBox.backFrames[1].value = new BABYLON.Vector3(110, 20, 80)
-          animationBox.backFrames[2].value = new BABYLON.Vector3(110, 0, 80)
-          scene.beginDirectAnimation(pheDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(pheLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(addButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
-            addButton.isVisible = false
-          })
-          scene.beginDirectAnimation(backButton, [animationBox.hideButton], 0, 3 * frameRate, false, 1, function() {
-            backButton.isVisible = false
-          })
-        }
-      }
-    })
-=======
->>>>>>> origin/dev
 
     // 两个检测试剂瓶的鼠标监听事件
     purBottle.actionManager = new BABYLON.ActionManager(scene)
@@ -482,17 +409,10 @@ export default function(canvas, engine) {
           animationBox.outFrames[1].value = new BABYLON.Vector3(80, 20, 80)
           scene.beginDirectAnimation(purDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(purLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
-<<<<<<< HEAD
-          addButton.isVisible = true
-          backButton.isVisible = true
-          scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
-=======
           // addButton.isVisible = true
           // backButton.isVisible = true
           // scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
           // scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
->>>>>>> origin/dev
         }
       })
     )
@@ -528,17 +448,10 @@ export default function(canvas, engine) {
           animationBox.outFrames[1].value = new BABYLON.Vector3(110, 20, 80)
           scene.beginDirectAnimation(pheDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(pheLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
-<<<<<<< HEAD
-          addButton.isVisible = true
-          backButton.isVisible = true
-          scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
-=======
           // addButton.isVisible = true
           // backButton.isVisible = true
           // scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
           // scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
->>>>>>> origin/dev
         }
       })
     )
