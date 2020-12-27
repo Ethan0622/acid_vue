@@ -1,28 +1,26 @@
 import Vue from 'vue'
 import DialogVue from './dialog.vue'
 
-let newInstance = null
-//将 vue 组件变为构造函数
+let _dialogInstance = null
+
 let DialogConstructor = Vue.extend(DialogVue)
 
 let init = options => {
-  newInstance = new DialogConstructor()
-  Object.assign(newInstance, options)
-  //document.body.appendChild(newInstance.$mount().$el)
-  //document.getElementById('app').appendChild(newInstance.$mount().$el)
+  _dialogInstance = new DialogConstructor()
+  Object.assign(_dialogInstance, options)
 
-  let div = document.createElement('DIV')
-  div.setAttribute('id', 'dialog')
-  document.body.appendChild(div)
-  document.getElementById('dialog').appendChild(newInstance.$mount().$el)
+  const node = document.createElement('DIV')
+  node.setAttribute('id', 'dialog')
+  document.body.appendChild(node)
+  document.getElementById('dialog').appendChild(_dialogInstance.$mount().$el)
 }
 
 let caller = options => {
-  if (!newInstance) {
+  if (!_dialogInstance) {
     init(options)
   }
-  return newInstance.show(vm => {
-    newInstance = null
+  return _dialogInstance.show(vm => {
+    _dialogInstance = null
   })
 }
 

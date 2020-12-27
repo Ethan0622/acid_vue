@@ -33,7 +33,7 @@ export default {
 
   methods: {
     show(cb) {
-      typeof cb === 'function' && cb.call(this, this)
+      typeof cb === 'function' && cb.call(this)
       return new Promise((resolve) => {
         this.resolve = resolve
       })
