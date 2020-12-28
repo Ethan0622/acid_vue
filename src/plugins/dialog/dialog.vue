@@ -1,7 +1,7 @@
 <template>
   <div class="dialog">
     <dialog-bubble-vue class="bubble" @click="next" :clickable="!this.typer.typing">
-      <p class="text">{{ typed }}</p>
+      <p class="text" v-html="typed"></p>
     </dialog-bubble-vue>
     <div class="choices" v-if="showChoicesView">
       <div v-for="choice in paragraph.responses" :key="choice.name" @click="feedback(choice)" class="choice">
@@ -33,7 +33,7 @@ export default {
 
   methods: {
     show(cb) {
-      typeof cb === 'function' && cb.call(this, this)
+      typeof cb === 'function' && cb.call(this)
       return new Promise((resolve) => {
         this.resolve = resolve
       })
