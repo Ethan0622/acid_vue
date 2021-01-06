@@ -159,16 +159,38 @@ hideFrames.push({
 })
 hideButton.setKeys(hideFrames)
 
+function pullInCamera(camera) {
+  const pullInCamera = new BABYLON.Animation(
+    'pullInCamera',
+    'position',
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
+  const pullInCameraFrames = []
+  pullInCameraFrames.push({
+    frame: 0,
+    value: camera.position
+  })
+  pullInCameraFrames.push({
+    frame: 6 * frameRate,
+    value: new BABYLON.Vector3(0, 50, -50)
+  })
+  pullInCamera.setKeys(pullInCameraFrames)
+  return pullInCamera
+}
+
 const animationBox = new Object({
-  outDropper: outDropper,
-  outFrames: outFrames,
-  backDropper: backDropper,
-  backFrames: backFrames,
-  dropLiquid: dropLiquid,
-  liquidScale: liquidScale,
-  liquidSphereVisible: liquidSphereVisible,
-  showButton: showButton,
-  hideButton: hideButton
+  outDropper,
+  outFrames,
+  backDropper,
+  backFrames,
+  dropLiquid,
+  liquidScale,
+  liquidSphereVisible,
+  showButton,
+  hideButton,
+  pullInCamera
 })
 
 export default animationBox
