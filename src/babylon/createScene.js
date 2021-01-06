@@ -240,7 +240,7 @@ export default function(canvas, engine) {
     purText.linkWithMesh(purBottle)
     purText.linkOffsetY = 50
     purText.alpha = 0
-
+  
     const pheText = new GUI.TextBlock()
     pheText.text = '酚酞试剂'
     pheText.resizeToFit = true
@@ -250,41 +250,6 @@ export default function(canvas, engine) {
     pheText.linkWithMesh(pheBottle)
     pheText.linkOffsetY = 50
     pheText.alpha = 0
-
-    // 右侧切换视角的按钮，临时使用，切换视角还有点小问题
-    const cameraButton = new GUI.Button.CreateSimpleButton('but1', '切换视角')
-    cameraButton.left = '800px'
-    cameraButton.width = '150px'
-    cameraButton.height = '40px'
-    cameraButton.color = 'white'
-    cameraButton.cornerRadius = 20
-    cameraButton.background = 'green'
-    advancedTexture.addControl(cameraButton)
-
-    // // 控制滴管滴溶液和放回的按钮，由于加了动画，刚进入不可见
-    // const addButton = new GUI.Button.CreateSimpleButton('addButton', '滴加试剂')
-    // addButton.width = '150px'
-    // addButton.height = '40px'
-    // addButton.color = 'white'
-    // addButton.alpha = 0
-    // addButton.cornerRadius = 20
-    // addButton.background = 'green'
-    // advancedTexture.addControl(addButton)
-    // addButton.linkWithMesh(tube)
-    // addButton.linkOffsetY = -280
-    // addButton.linkOffsetX = 180
-
-    // const backButton = new GUI.Button.CreateSimpleButton('backButton', '放回滴管')
-    // backButton.width = '150px'
-    // backButton.height = '40px'
-    // backButton.color = 'white'
-    // backButton.alpha = 0
-    // backButton.cornerRadius = 20
-    // backButton.background = 'green'
-    // advancedTexture.addControl(backButton)
-    // backButton.linkWithMesh(tube)
-    // backButton.linkOffsetY = -280
-    // backButton.linkOffsetX = -180
 
     // 模拟液滴
     const liquidSphere = BABYLON.MeshBuilder.CreateSphere('liquidSphere', { diameter: 0.4, segments: 32 }, scene)
@@ -371,10 +336,6 @@ export default function(canvas, engine) {
           animationBox.outFrames[1].value = new BABYLON.Vector3(80, 20, 80)
           scene.beginDirectAnimation(purDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(purLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
-          // addButton.isVisible = true
-          // backButton.isVisible = true
-          // scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
-          // scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
         }
       })
     )
@@ -410,10 +371,6 @@ export default function(canvas, engine) {
           animationBox.outFrames[1].value = new BABYLON.Vector3(110, 20, 80)
           scene.beginDirectAnimation(pheDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
           scene.beginDirectAnimation(pheLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
-          // addButton.isVisible = true
-          // backButton.isVisible = true
-          // scene.beginDirectAnimation(addButton, [animationBox.showButton], 0, 3 * frameRate, false)
-          // scene.beginDirectAnimation(backButton, [animationBox.showButton], 0, 3 * frameRate, false)
         }
       })
     )

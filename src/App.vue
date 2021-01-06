@@ -2,7 +2,7 @@
   <div id="app">
     <canvas id="renderCanvas"></canvas>
     <div id="gui">
-      <Narrative :babylon="babylon"/>
+      <Narrative :babylon="babylon" />
     </div>
   </div>
 </template>
@@ -17,8 +17,7 @@ export default {
   components: { Narrative },
   data() {
     return {
-    babylon: {}
-
+      babylon: {},
     }
   },
   mounted() {

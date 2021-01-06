@@ -1,6 +1,7 @@
 import * as BABYLON from '@babylonjs/core/Legacy/legacy'
 import '@babylonjs/loaders/glTF'
 import createScene from './babylon/createScene'
+import animationBox from './babylon/animationBox'
 
 export default class BabylonApp {
   constructor(domId) {
@@ -18,28 +19,11 @@ export default class BabylonApp {
   }
 
   pullInCamera() {
-    const camera = this.scene.activeCamera
     const frameRate = 12
-    const pullInCamera = new BABYLON.Animation(
-      'pullInCamera',
-      'position',
-      frameRate,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-    )
-    const pullInCameraFrames = []
-    pullInCameraFrames.push({
-      frame: 0,
-      value: camera.position
-    })
-    pullInCameraFrames.push({
-      frame: 6 * frameRate,
-      value: new BABYLON.Vector3(0, 50, -50)
-    })
-    pullInCamera.setKeys(pullInCameraFrames)
-    camera.setTarget(new BABYLON.Vector3(0, 60, 0))
+    const pullInCamera =  animationBox.pullInCamera(this.scene.activeCamera)
+    this.scene.activeCamera.setTarget(new BABYLON.Vector3(0, 65, 0))
     setTimeout(() => {
-      this.scene.beginDirectAnimation(camera, [pullInCamera], 0, 6 * frameRate, false, 6, function() {
+      this.scene.beginDirectAnimation(this.scene.activeCamera, [pullInCamera], 0, 6 * frameRate, false, 6, function() {
         console.log('完成！')
       })
     }, 500)

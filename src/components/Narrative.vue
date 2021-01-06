@@ -4,7 +4,6 @@
 
 <script>
 import script from '../assets/scripts/script'
-import operation from '../babylon/operation'
 
 export default {
   props: {
@@ -14,7 +13,6 @@ export default {
     return {}
   },
   async mounted() {
-    console.log(this.babylon)
     const p1 = script.paragraphs.find((p) => p.id == '初始画面')
     await this.$dialog({ paragraph: p1 })
 
