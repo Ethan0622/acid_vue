@@ -68,7 +68,7 @@ class Typer {
   reset(str) {
     this.targetString = str
     this.lexicalStructure = marked.lexer(str)
-    console.log(this.lexicalStructure);
+    // console.log(this.lexicalStructure);
     this.pointer = [0, 0]
     this.outputString = ''
     this.typing = false

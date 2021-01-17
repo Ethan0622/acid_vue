@@ -159,25 +159,49 @@ hideFrames.push({
 })
 hideButton.setKeys(hideFrames)
 
-function pullInCamera(camera) {
-  const pullInCamera = new BABYLON.Animation(
-    'pullInCamera',
+// 通过改变相机位置来移动相机的函数，接受两个参数（需要移动的相机，移动到的目标位置, 结束帧）
+function moveCameraByPosition(camera, targetPosition, endFrame) {
+  const moveCameraByPosition = new BABYLON.Animation(
+    'moveCameraByPosition',
     'position',
     frameRate,
     BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
     BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
   )
-  const pullInCameraFrames = []
-  pullInCameraFrames.push({
+  const moveCameraByPositionFrames = []
+  moveCameraByPositionFrames.push({
     frame: 0,
     value: camera.position
   })
-  pullInCameraFrames.push({
-    frame: 6 * frameRate,
-    value: new BABYLON.Vector3(0, 50, -50)
+  moveCameraByPositionFrames.push({
+    frame: endFrame,
+    value: targetPosition
   })
-  pullInCamera.setKeys(pullInCameraFrames)
-  return pullInCamera
+  moveCameraByPosition.setKeys(moveCameraByPositionFrames)
+
+  return moveCameraByPosition
+}
+
+function showMesh(endFrame) {
+  const showMesh = new BABYLON.Animation(
+    'showMesh',
+    'visibility',
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
+  const showMeshFrames = []
+  showMeshFrames.push({
+    frame: 0,
+    value: 0
+  })
+  showMeshFrames.push({
+    frame: endFrame,
+    value: 1
+  })
+  showMesh.setKeys(showMeshFrames)
+
+  return showMesh
 }
 
 const animationBox = new Object({
@@ -190,7 +214,8 @@ const animationBox = new Object({
   liquidSphereVisible,
   showButton,
   hideButton,
-  pullInCamera
+  moveCameraByPosition,
+  showMesh
 })
 
 export default animationBox

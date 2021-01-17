@@ -3,6 +3,7 @@ import * as GUI from '@babylonjs/gui'
 import tube from '../assets/meshes/tube.glb'
 import purbottle from '../assets/meshes/purbottle.glb'
 import phebottle from '../assets/meshes/phebottle.glb'
+import dropper from '../assets/meshes/dropper.glb'
 import animationBox from './animationBox'
 
 export default function(canvas, engine) {
@@ -14,7 +15,8 @@ export default function(canvas, engine) {
   Promise.all([
     BABYLON.SceneLoader.ImportMeshAsync('', tube, '', scene, undefined, '.glb'),
     BABYLON.SceneLoader.ImportMeshAsync('', purbottle, '', scene, undefined, '.glb'),
-    BABYLON.SceneLoader.ImportMeshAsync('', phebottle, '', scene, undefined, '.glb')
+    BABYLON.SceneLoader.ImportMeshAsync('', phebottle, '', scene, undefined, '.glb'),
+    BABYLON.SceneLoader.ImportMeshAsync('', dropper, '', scene, undefined, '.glb')
   ]).then(function() {
     const tubeMesh = []
     tubeMesh.push(scene.getMeshByName('tube'))
@@ -33,6 +35,13 @@ export default function(canvas, engine) {
     phebottleMesh.push(scene.getMeshByName('phebottle'))
     phebottleMesh.push(scene.getMeshByName('phesolution'))
 
+    const dropperMesh = []
+    dropperMesh.push(scene.getTransformNodeByName('dropper'))
+    dropperMesh.push(scene.getMeshByName('dropliquid'))
+
+    console.log(dropperMesh)
+    console.log(scene)
+
     // 停止模型自带动画
     const myan = scene.animationGroups.find(a => a.name === 'All Animations')
     myan.stop()
@@ -46,14 +55,14 @@ export default function(canvas, engine) {
       camera.setTarget(new BABYLON.Vector3(0, 10, 0))
       camera.lowerBetaLimit = (Math.PI / 2) * 0.02
       camera.upperBetaLimit = (Math.PI / 2) * 0.9
-      camera.lowerRadiusLimit = 20
+      camera.lowerRadiusLimit = 50
       camera.upperRadiusLimit = 250
       camera.attachControl(canvas, true)
       camera.panningSensibility = 1
       camera.wheelPrecision = 3
       camera.useBouncingBehavior = true
       camera.useFramingBehavior = true
-      camera.position = new BABYLON.Vector3(0, 50, -150)
+      camera.position = new BABYLON.Vector3(0, 50, -160)
     }
 
     // 添加一组灯光到场景
@@ -82,10 +91,10 @@ export default function(canvas, engine) {
       ground.receiveShadows = true
     }
 
-    // 定义试剂瓶、试管所需材质
-    const matBottle = new BABYLON.StandardMaterial('matBottle', scene)
-    matBottle.diffuseColor = new BABYLON.Color3(1, 1, 1)
-    matBottle.alpha = 0.3
+    // 定义试剂瓶、试管的玻璃透明材质
+    const matGlass = new BABYLON.StandardMaterial('matGlass', scene)
+    matGlass.diffuseColor = new BABYLON.Color3(1, 1, 1)
+    matGlass.alpha = 0.3
 
     // 设置试管参数
     let tube = tubeMesh[0]
@@ -182,8 +191,8 @@ export default function(canvas, engine) {
       purSolution.material = matPursolution
       purLiquid.material = matPursolution
 
-      purBottle.material = matBottle
-      purDropper.getChildMeshes()[0].material = matBottle
+      purBottle.material = matGlass
+      purDropper.getChildMeshes()[0].material = matGlass
     }
 
     // 设置无色酚酞试剂参数
@@ -208,8 +217,23 @@ export default function(canvas, engine) {
       matPhesolution.alpha = 0.9
       pheSolution.material = matPhesolution
 
-      pheBottle.material = matBottle
-      pheDropper.getChildMeshes()[0].material = matBottle
+      pheBottle.material = matGlass
+      pheDropper.getChildMeshes()[0].material = matGlass
+    }
+
+    // 设置添加溶液的滴管参数
+    let dropper = dropperMesh[0]
+    let dropliquid = dropperMesh[1]
+    modifyDropperMeshes()
+    function modifyDropperMeshes() {
+      dropper.getChildMeshes()[0].material = matGlass
+
+      dropper.position.y = 50
+      dropliquid.position.y = 50
+
+      dropliquid.visibility = 0
+      dropper.getChildMeshes()[0].visibility = 0
+      dropper.getChildMeshes()[1].visibility = 0
     }
 
     // 添加阴影
@@ -261,25 +285,6 @@ export default function(canvas, engine) {
 
     // 整个场景动画的帧率，这个参数要与animationBox中的数值保持一致
     const frameRate = 12
-
-    // 移动相机的动画，暂时独立不出去
-    const moveCamera = new BABYLON.Animation(
-      'moveCamera',
-      'position',
-      frameRate,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-    )
-    const moveFrames = []
-    moveFrames.push({
-      frame: 0,
-      value: camera.position
-    })
-    moveFrames.push({
-      frame: 6 * frameRate,
-      value: new BABYLON.Vector3(90, 10, -50)
-    })
-    moveCamera.setKeys(moveFrames)
 
     let whichLiquid = ''
 

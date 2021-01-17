@@ -20,12 +20,30 @@ export default class BabylonApp {
 
   pullInCamera() {
     const frameRate = 12
-    const pullInCamera =  animationBox.pullInCamera(this.scene.activeCamera)
-    this.scene.activeCamera.setTarget(new BABYLON.Vector3(0, 65, 0))
+    const pullInCamera = animationBox.moveCameraByPosition(
+      this.scene.activeCamera,
+      new BABYLON.Vector3(0, 50, -50),
+      6 * frameRate
+    )
+    const showDropper = animationBox.showMesh(2 * frameRate)
+    this.scene.activeCamera.setTarget(new BABYLON.Vector3(0, 60, 0))
     setTimeout(() => {
-      this.scene.beginDirectAnimation(this.scene.activeCamera, [pullInCamera], 0, 6 * frameRate, false, 6, function() {
+      this.scene.beginDirectAnimation(this.scene.activeCamera, [pullInCamera], 0, 6 * frameRate, false, 1, function() {
         console.log('完成！')
       })
     }, 500)
+
+    this.scene.beginDirectAnimation(this.scene.getMeshByName('dropper_primitive0'), [showDropper], 0, 2 * frameRate, false)
+    this.scene.beginDirectAnimation(this.scene.getMeshByName('dropper_primitive1'), [showDropper], 0, 2 * frameRate, false)
+    this.scene.beginDirectAnimation(this.scene.getMeshByName('dropliquid'), [showDropper], 0, 2 * frameRate, false)
+  }
+
+  firstDropLiqiud() {
+    const frameRate = 12
+    const liquidSphere = this.scene.getMeshByName('liquidSphere')
+
+    this.scene.beginDirectAnimation(liquidSphere, [animationBox.liquidSphereVisible], 0, 2 * frameRate, false)
+    this.scene.beginDirectAnimation(liquidSphere, [animationBox.liquidScale], 0, 2 * frameRate, false)
+    this.scene.beginDirectAnimation(liquidSphere, [animationBox.dropLiquid], 0, 2 * frameRate, false)
   }
 }
