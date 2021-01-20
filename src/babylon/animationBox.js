@@ -204,6 +204,57 @@ function showMesh(endFrame) {
   return showMesh
 }
 
+// 定义试管中溶液增减动画的函数
+BABYLON.Mesh.prototype.scaleyFromPivot = function(pivotPoint, t) {
+  let _sy = (this.scaling.y + t / 10) / this.scaling.y
+
+  const blscaleY = new BABYLON.Animation(
+    'blscaleY',
+    'scaling.y',
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
+  const blscaleYFrames = []
+  blscaleYFrames.push({
+    frame: 0,
+    value: this.scaling.y
+  })
+  blscaleYFrames.push({
+    frame: 1.8 * frameRate,
+    value: this.scaling.y
+  })
+  blscaleYFrames.push({
+    frame: 2.2 * frameRate,
+    value: this.scaling.y + t / 10
+  })
+  blscaleY.setKeys(blscaleYFrames)
+
+  const blpositionY = new BABYLON.Animation(
+    'blpositionY',
+    'position.y',
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
+  const blpositionYFrames = []
+  blpositionYFrames.push({
+    frame: 0,
+    value: this.position.y
+  })
+  blpositionYFrames.push({
+    frame: 1.8 * frameRate,
+    value: this.position.y
+  })
+  blpositionYFrames.push({
+    frame: 2.2 * frameRate,
+    value: pivotPoint.y + _sy * (this.position.y - pivotPoint.y)
+  })
+  blpositionY.setKeys(blpositionYFrames)
+
+  return [blscaleY, blpositionY]
+}
+
 const animationBox = new Object({
   outDropper,
   outFrames,
