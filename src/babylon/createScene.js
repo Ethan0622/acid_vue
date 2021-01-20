@@ -3,9 +3,14 @@ import * as GUI from '@babylonjs/gui'
 import tube from '../assets/meshes/tube.glb'
 import purbottle from '../assets/meshes/purbottle.glb'
 import phebottle from '../assets/meshes/phebottle.glb'
+import dropper from '../assets/meshes/dropper.glb'
 import animationBox from './animationBox'
+import { createActions } from './createActions'
 
 export default function(canvas, engine) {
+  // 整个场景动画的帧率，这个参数要与animationBox中的数值保持一致，本项目帧率保持12不变
+  const frameRate = 12
+
   // 创建一个场景scene
   const scene = new BABYLON.Scene(engine)
   scene.clearColor = new BABYLON.Color3(240 / 255, 240 / 255, 240 / 255)
@@ -14,7 +19,8 @@ export default function(canvas, engine) {
   Promise.all([
     BABYLON.SceneLoader.ImportMeshAsync('', tube, '', scene, undefined, '.glb'),
     BABYLON.SceneLoader.ImportMeshAsync('', purbottle, '', scene, undefined, '.glb'),
-    BABYLON.SceneLoader.ImportMeshAsync('', phebottle, '', scene, undefined, '.glb')
+    BABYLON.SceneLoader.ImportMeshAsync('', phebottle, '', scene, undefined, '.glb'),
+    BABYLON.SceneLoader.ImportMeshAsync('', dropper, '', scene, undefined, '.glb')
   ]).then(function() {
     const tubeMesh = []
     tubeMesh.push(scene.getMeshByName('tube'))
@@ -33,6 +39,10 @@ export default function(canvas, engine) {
     phebottleMesh.push(scene.getMeshByName('phebottle'))
     phebottleMesh.push(scene.getMeshByName('phesolution'))
 
+    const dropperMesh = []
+    dropperMesh.push(scene.getTransformNodeByName('dropper'))
+    dropperMesh.push(scene.getMeshByName('dropliquid'))
+
     // 停止模型自带动画
     const myan = scene.animationGroups.find(a => a.name === 'All Animations')
     myan.stop()
@@ -46,14 +56,14 @@ export default function(canvas, engine) {
       camera.setTarget(new BABYLON.Vector3(0, 10, 0))
       camera.lowerBetaLimit = (Math.PI / 2) * 0.02
       camera.upperBetaLimit = (Math.PI / 2) * 0.9
-      camera.lowerRadiusLimit = 20
+      camera.lowerRadiusLimit = 50
       camera.upperRadiusLimit = 250
       camera.attachControl(canvas, true)
       camera.panningSensibility = 1
       camera.wheelPrecision = 3
       camera.useBouncingBehavior = true
       camera.useFramingBehavior = true
-      camera.position = new BABYLON.Vector3(0, 50, -150)
+      camera.position = new BABYLON.Vector3(0, 50, -160)
     }
 
     // 添加一组灯光到场景
@@ -68,9 +78,6 @@ export default function(canvas, engine) {
       shadowLight.intensity = 0.7
     }
 
-    //高光
-    const highLight = new BABYLON.HighlightLayer('hl1', scene)
-
     // 添加一个地面
     settingGround()
     function settingGround() {
@@ -82,10 +89,10 @@ export default function(canvas, engine) {
       ground.receiveShadows = true
     }
 
-    // 定义试剂瓶、试管所需材质
-    const matBottle = new BABYLON.StandardMaterial('matBottle', scene)
-    matBottle.diffuseColor = new BABYLON.Color3(1, 1, 1)
-    matBottle.alpha = 0.3
+    // 定义试剂瓶、试管的玻璃透明材质
+    const matGlass = new BABYLON.StandardMaterial('matGlass', scene)
+    matGlass.diffuseColor = new BABYLON.Color3(1, 1, 1)
+    matGlass.alpha = 0.3
 
     // 设置试管参数
     let tube = tubeMesh[0]
@@ -106,57 +113,6 @@ export default function(canvas, engine) {
       matLiquid.diffuseColor = new BABYLON.Color3(0, 0, 1)
       bottom_liquid.material = matLiquid
       main_liquid.material = matLiquid
-    }
-
-    // 定义试管中溶液增减动画的函数
-    BABYLON.Mesh.prototype.scaleyFromPivot = function(pivotPoint, t) {
-      let _sy = (this.scaling.y + t / 10) / this.scaling.y
-
-      const blscaleY = new BABYLON.Animation(
-        'blscaleY',
-        'scaling.y',
-        frameRate,
-        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-      )
-      const blscaleYFrames = []
-      blscaleYFrames.push({
-        frame: 0,
-        value: this.scaling.y
-      })
-      blscaleYFrames.push({
-        frame: 1.8 * frameRate,
-        value: this.scaling.y
-      })
-      blscaleYFrames.push({
-        frame: 2.2 * frameRate,
-        value: this.scaling.y + t / 10
-      })
-      blscaleY.setKeys(blscaleYFrames)
-
-      const blpositionY = new BABYLON.Animation(
-        'blpositionY',
-        'position.y',
-        frameRate,
-        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-      )
-      const blpositionYFrames = []
-      blpositionYFrames.push({
-        frame: 0,
-        value: this.position.y
-      })
-      blpositionYFrames.push({
-        frame: 1.8 * frameRate,
-        value: this.position.y
-      })
-      blpositionYFrames.push({
-        frame: 2.2 * frameRate,
-        value: pivotPoint.y + _sy * (this.position.y - pivotPoint.y)
-      })
-      blpositionY.setKeys(blpositionYFrames)
-
-      return [blscaleY, blpositionY]
     }
 
     // 设置紫色石蕊试剂参数
@@ -182,8 +138,8 @@ export default function(canvas, engine) {
       purSolution.material = matPursolution
       purLiquid.material = matPursolution
 
-      purBottle.material = matBottle
-      purDropper.getChildMeshes()[0].material = matBottle
+      purBottle.material = matGlass
+      purDropper.getChildMeshes()[0].material = matGlass
     }
 
     // 设置无色酚酞试剂参数
@@ -208,8 +164,23 @@ export default function(canvas, engine) {
       matPhesolution.alpha = 0.9
       pheSolution.material = matPhesolution
 
-      pheBottle.material = matBottle
-      pheDropper.getChildMeshes()[0].material = matBottle
+      pheBottle.material = matGlass
+      pheDropper.getChildMeshes()[0].material = matGlass
+    }
+
+    // 设置添加溶液的滴管参数
+    let dropper = dropperMesh[0]
+    let dropliquid = dropperMesh[1]
+    modifyDropperMeshes()
+    function modifyDropperMeshes() {
+      dropper.getChildMeshes()[0].material = matGlass
+
+      dropper.position.y = 50
+      dropliquid.position.y = 50
+
+      dropliquid.visibility = 0
+      dropper.getChildMeshes()[0].visibility = 0
+      dropper.getChildMeshes()[1].visibility = 0
     }
 
     // 添加阴影
@@ -240,7 +211,7 @@ export default function(canvas, engine) {
     purText.linkWithMesh(purBottle)
     purText.linkOffsetY = 50
     purText.alpha = 0
-  
+
     const pheText = new GUI.TextBlock()
     pheText.text = '酚酞试剂'
     pheText.resizeToFit = true
@@ -259,121 +230,10 @@ export default function(canvas, engine) {
     liquidSphere.material = matLiquidSphere
     liquidSphere.position.y = 53
 
-    // 整个场景动画的帧率，这个参数要与animationBox中的数值保持一致
-    const frameRate = 12
-
-    // 移动相机的动画，暂时独立不出去
-    const moveCamera = new BABYLON.Animation(
-      'moveCamera',
-      'position',
-      frameRate,
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-    )
-    const moveFrames = []
-    moveFrames.push({
-      frame: 0,
-      value: camera.position
-    })
-    moveFrames.push({
-      frame: 6 * frameRate,
-      value: new BABYLON.Vector3(90, 10, -50)
-    })
-    moveCamera.setKeys(moveFrames)
-
-    let whichLiquid = ''
-
-    // 换滴管使用时调用此函数
-    function changeDropper() {
-      if (purDropper.position._x == 0) {
-        animationBox.backFrames[1].value = new BABYLON.Vector3(80, 20, 80)
-        animationBox.backFrames[2].value = new BABYLON.Vector3(80, 0, 80)
-        scene.beginDirectAnimation(purDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
-        scene.beginDirectAnimation(purLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
-      } else if (pheDropper.position._x == 0) {
-        animationBox.backFrames[1].value = new BABYLON.Vector3(110, 20, 80)
-        animationBox.backFrames[2].value = new BABYLON.Vector3(110, 0, 80)
-        scene.beginDirectAnimation(pheDropper, [animationBox.backDropper], 0, 3 * frameRate, false)
-        scene.beginDirectAnimation(pheLiquid, [animationBox.backDropper], 0, 3 * frameRate, false)
-      }
-    }
-
     // 定义试管中的液体缩放基准点
     let pivotAt = new BABYLON.Vector3(0, main_liquid.getBoundingInfo().boundingBox.vectorsWorld[0].y, 0)
 
-    // 两个检测试剂瓶的鼠标监听事件
-    purBottle.actionManager = new BABYLON.ActionManager(scene)
-    pheBottle.actionManager = new BABYLON.ActionManager(scene)
-
-    purBottle.actionManager.registerAction(
-      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOverTrigger, [
-        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
-          highLight.addMesh(purBottle, BABYLON.Color3.Magenta())
-          highLight.addMesh(purDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
-          highLight.addMesh(purDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
-        }),
-        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, purText, 'alpha', 1, 300)
-      ])
-    )
-
-    purBottle.actionManager.registerAction(
-      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOutTrigger, [
-        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
-          highLight.removeMesh(purBottle)
-          highLight.removeMesh(purDropper.getChildMeshes()[0])
-          highLight.removeMesh(purDropper.getChildMeshes()[1])
-        }),
-        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, purText, 'alpha', 0, 300)
-      ])
-    )
-
-    purBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function() {
-        if (scene.animatables.length == 0) {
-          changeDropper()
-          whichLiquid = 'pur'
-          animationBox.outFrames[0].value = new BABYLON.Vector3(80, 0, 80)
-          animationBox.outFrames[1].value = new BABYLON.Vector3(80, 20, 80)
-          scene.beginDirectAnimation(purDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(purLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
-        }
-      })
-    )
-
-    pheBottle.actionManager.registerAction(
-      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOverTrigger, [
-        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function() {
-          highLight.addMesh(pheBottle, BABYLON.Color3.Magenta())
-          highLight.addMesh(pheDropper.getChildMeshes()[0], BABYLON.Color3.Magenta())
-          highLight.addMesh(pheDropper.getChildMeshes()[1], BABYLON.Color3.Magenta())
-        }),
-        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, pheText, 'alpha', 1, 300)
-      ])
-    )
-
-    pheBottle.actionManager.registerAction(
-      new BABYLON.CombineAction(BABYLON.ActionManager.OnPointerOutTrigger, [
-        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function() {
-          highLight.removeMesh(pheBottle)
-          highLight.removeMesh(pheDropper.getChildMeshes()[0])
-          highLight.removeMesh(pheDropper.getChildMeshes()[1])
-        }),
-        new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, pheText, 'alpha', 0, 300)
-      ])
-    )
-
-    pheBottle.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function() {
-        if (scene.animatables.length == 0) {
-          changeDropper()
-          whichLiquid = 'phe'
-          animationBox.outFrames[0].value = new BABYLON.Vector3(110, 0, 80)
-          animationBox.outFrames[1].value = new BABYLON.Vector3(110, 20, 80)
-          scene.beginDirectAnimation(pheDropper, [animationBox.outDropper], 0, 3 * frameRate, false)
-          scene.beginDirectAnimation(pheLiquid, [animationBox.outDropper], 0, 3 * frameRate, false)
-        }
-      })
-    )
+    createActions(scene, { purBottle, purDropper, purLiquid, pheBottle, pheDropper, pheLiquid, purText, pheText })
   })
 
   return scene
